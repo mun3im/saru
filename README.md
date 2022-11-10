@@ -8,8 +8,8 @@
 
 * [Audiomoth](https://www.openacousticdevices.info/audiomoth)
 * [Song Meter](https://www.wildlifeacoustics.com/products/song-meter-sm4)
-* [ARUPI](https://www.instructables.com/ARUPi-A-Low-Cost-Automated-Recording-Unit-for-Soun/))
-* [BELA](https://www.elecrow.com/blog/how-about-bela-from-kickstarter.html)[(YouTube)](https://youtu.be/Os2ljj1cIog)
+* [ARUPI](https://www.instructables.com/ARUPi-A-Low-Cost-Automated-Recording-Unit-for-Soun/)
+* [BELA](https://www.elecrow.com/blog/how-about-bela-from-kickstarter.html)BeagleBone-based system[(YouTube)](https://youtu.be/Os2ljj1cIog)
 
 ### Papers on ARU
 
