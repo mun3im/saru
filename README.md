@@ -11,4 +11,4 @@
 
 ### Papers
 
-* [SAFE Acoustics: An open-source, real-time eco-acoustic monitoring network in the tropical rainforests of Borneo] (https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13438)
+* Sethi, S, et al [SAFE Acoustics: An open-source, real-time eco-acoustic monitoring network in the tropical rainforests of Borneo] (https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13438)
