@@ -13,7 +13,7 @@
 
 ### Audio TinyML
 
-* [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/) + [Github repo](https://github.com/Seeed-Studio/Seeed_Arduino_Sketchbook/tree/master/examples/WioTerminal_TinyML_2_Audio_Scene_Recognition)
+* [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/) 
 
 ### Papers on ARU
 
@@ -30,3 +30,4 @@
 
 ### Code
 * [rpi-eco-monitoring](https://github.com/sarabsethi/rpi-eco-monitoring) Software for SAFE Raspberry Pi
+* [Seeedstudio Arduino audio scene recognition](https://github.com/Seeed-Studio/Seeed_Arduino_Sketchbook/tree/master/examples/WioTerminal_TinyML_2_Audio_Scene_Recognition)
