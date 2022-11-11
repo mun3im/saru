@@ -33,7 +33,8 @@
 ### Our Papers
 
 * Ramli, Norhafizah, et al. "An open source LoRa based vehicle tracking system." _Indonesian Journal of Electrical Engineering and Informatics (IJEEI)_ 7.2 (2019): 221-228. [(PDF)](http://section.iaesonline.com/index.php/IJEEI/article/viewFile/1174/414)
-* Jeoung, Jong Ee, You Kok Yeow, and Muhammad Munim Ahmad. "Keyword Spotting on Embedded System with Deep Learning." _Proceedings of 2019 Electrical Engineering Symposium (EES2019) - Vol. 3_, 2019. [(PDF)](https://www.researchgate.net/profile/Muhammad-Zabidi/publication/346657648_Keyword_Spotting_on_Embedded_System_with_Deep_Learning/links/5fcce1c492851c00f854e2a3/Keyword-Spotting-on-Embedded-System-with-Deep-Learning.pdf)
+* Jeoung, Jong Ee, You Kok Yeow, and Muhammad Munim Ahmad. "Keyword Spotting on Embedded System with Deep Learning." _Proceedings of 2019 Electrical Engineering Symposium (EES2019)_ - Vol. 3 (2019). [(PDF)](https://www.researchgate.net/profile/Muhammad-Zabidi/publication/346657648_Keyword_Spotting_on_Embedded_System_with_Deep_Learning/links/5fcce1c492851c00f854e2a3/Keyword-Spotting-on-Embedded-System-with-Deep-Learning.pdf)
+* Zabidi, Muhammad Munim, et al. "Bird Sound Detection with Binarized Neural Networks." _ELEKTRIKA-Journal of Electrical Engineering 21.1_ (2022): 48-53. [(PDF)](https://elektrika.utm.my/index.php/ELEKTRIKA_Journal/article/download/349/221)
 
 ### Code
 * [rpi-eco-monitoring](https://github.com/sarabsethi/rpi-eco-monitoring) Software for SAFE Raspberry Pi
