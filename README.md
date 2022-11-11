@@ -29,6 +29,7 @@
 * Wijers, Matthew, et al. "CARACAL: A versatile passive acoustic monitoring tool for wildlife research and conservation." _Bioacoustics_ 30.1 (2021): 41-57.[(PDF)](https://ora.ox.ac.uk/objects/uuid:dffe258b-1d51-4780-afa2-9111aacdb67f/files/mefe9f5d23498fcd6d08c00070458f744)
 * Nagy, Kristóf, et al. "Internet of Birds (IoB): Song Based Bird Sensing via Machine Learning in the Cloud: How to sense, identify, classify birds based on their songs?." 2020 _IEEE SENSORS_. IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9278714)
 * Sturley, Sean, and Santiago Matalonga. "PANDI: a hybrid open source edge-based system for environmental and real-time passive acoustic monitoring-prototype design and development." 2020 1st International conference on innovative research in applied science, engineering and technology (IRASET). IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9092006)
+* Kahl, Stefan, et al. "BirdNET: A deep learning solution for avian diversity monitoring." _Ecological Informatics_ 61 (2021): 101236. [(HTML)](https://www.sciencedirect.com/science/article/pii/S1574954121000273)
 
 ### Our Papers
 
