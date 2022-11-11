@@ -30,6 +30,11 @@
 * Nagy, Kristóf, et al. "Internet of Birds (IoB): Song Based Bird Sensing via Machine Learning in the Cloud: How to sense, identify, classify birds based on their songs?." 2020 _IEEE SENSORS_. IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9278714)
 * Sturley, Sean, and Santiago Matalonga. "PANDI: a hybrid open source edge-based system for environmental and real-time passive acoustic monitoring-prototype design and development." 2020 1st International conference on innovative research in applied science, engineering and technology (IRASET). IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9092006)
 
+### Our Papers
+
+* Ramli, Norhafizah, et al. "An open source LoRa based vehicle tracking system." _Indonesian Journal of Electrical Engineering and Informatics (IJEEI)_ 7.2 (2019): 221-228. [(PDF)](http://section.iaesonline.com/index.php/IJEEI/article/viewFile/1174/414)
+* Jeoung, Jong Ee, You Kok Yeow, and Muhammad Munim Ahmad. "Keyword Spotting on Embedded System with Deep Learning." _Proceedings of 2019 Electrical Engineering Symposium (EES2019) - Vol. 3_, 2019. [(PDF)](https://www.researchgate.net/profile/Muhammad-Zabidi/publication/346657648_Keyword_Spotting_on_Embedded_System_with_Deep_Learning/links/5fcce1c492851c00f854e2a3/Keyword-Spotting-on-Embedded-System-with-Deep-Learning.pdf)
+
 ### Code
 * [rpi-eco-monitoring](https://github.com/sarabsethi/rpi-eco-monitoring) Software for SAFE Raspberry Pi
 * [Seeedstudio Arduino audio scene recognition](https://github.com/Seeed-Studio/Seeed_Arduino_Sketchbook/tree/master/examples/WioTerminal_TinyML_2_Audio_Scene_Recognition)
