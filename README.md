@@ -11,6 +11,10 @@
 * [ARUPI](https://www.instructables.com/ARUPi-A-Low-Cost-Automated-Recording-Unit-for-Soun/)
 * [BELA](https://www.elecrow.com/blog/how-about-bela-from-kickstarter.html) BeagleBone-based system [(YouTube)](https://youtu.be/Os2ljj1cIog)
 
+### Audio TinyML
+
+* [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/)
+
 ### Papers on ARU
 
 * Shonfield, Julia, and Erin Bayne. "Autonomous recording units in avian ecological research: current use and future applications." _Avian Conservation and Ecology_ 12.1 (2017). [(HTML)](http://www.ace-eco.org/vol12/iss1/art14)
