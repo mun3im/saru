@@ -16,6 +16,9 @@
 
 * [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/) 
 
+### Apps
+* [BirdNET](https://birdnet.cornell.edu/)
+
 ### Papers on ARU
 
 * Shonfield, Julia, and Erin Bayne. "Autonomous recording units in avian ecological research: current use and future applications." _Avian Conservation and Ecology_ 12.1 (2017). [(HTML)](http://www.ace-eco.org/vol12/iss1/art14)
