@@ -26,7 +26,7 @@
 * Solomes, Alexandru-Marius, and Dan Stowell. "Efficient bird sound detection on the bela embedded system." ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020. [(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9053533)
 * Kiarie, Gabriel, and Ciira wa MAINA. "Raspberry Pi Based Recording System for Acoustic Monitoring of Bird Species." _2021 IST-Africa Conference (IST-Africa)_. IEEE, 2021. [(PDF)](https://idl-bnc-idrc.dspacedirect.org/bitstream/handle/10625/61557/2022-10-01_Raspberry%20Pi%20Based%20Recording%20System%20for.pdf)
 * Ciira, Wa Maina. "Cost effective acoustic monitoring of bird species." _Interspeech_, 2016. [(PDF)](https://www.isca-speech.org/archive_v0/Interspeech_2016/pdfs/0746.PDF)
-* Wijers, Matthew, et al. "CARACAL: A versatile passive acoustic monitoring tool for wildlife research and conservation." _Bioacoustics_ 30.1 (2021): 41-57.[(PDF)[(https://ora.ox.ac.uk/objects/uuid:dffe258b-1d51-4780-afa2-9111aacdb67f/files/mefe9f5d23498fcd6d08c00070458f744)
+* Wijers, Matthew, et al. "CARACAL: A versatile passive acoustic monitoring tool for wildlife research and conservation." _Bioacoustics_ 30.1 (2021): 41-57.[(PDF)](https://ora.ox.ac.uk/objects/uuid:dffe258b-1d51-4780-afa2-9111aacdb67f/files/mefe9f5d23498fcd6d08c00070458f744)
 * Nagy, Kristóf, et al. "Internet of Birds (IoB): Song Based Bird Sensing via Machine Learning in the Cloud: How to sense, identify, classify birds based on their songs?." 2020 _IEEE SENSORS_. IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9278714)
 
 ### Code
