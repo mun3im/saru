@@ -13,7 +13,7 @@
 
 ### Audio TinyML
 
-* [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/)
+* [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/) + [Github repo](https://github.com/Seeed-Studio/Seeed_Arduino_Sketchbook/tree/master/examples/WioTerminal_TinyML_2_Audio_Scene_Recognition)
 
 ### Papers on ARU
 
