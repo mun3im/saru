@@ -19,8 +19,8 @@
 ### Apps
 * [BirdNET](https://birdnet.cornell.edu/) from Cornell University, USA
 * [Merlin](https://merlin.allaboutbirds.org/) also from Cornell University, USA
-* [eBird](https://ebird.org/about/)
-* [iNaturalist](https://www.inaturalist.org/)
+* [eBird](https://ebird.org/about/) - also from Cornell University, USA, for tracking bird observations, not for identifying
+* [iNaturalist](https://www.inaturalist.org/)- mainly for tracking bird observations, can identify bird from photos
 * [Warblr](https://www.warblr.co.uk/) from Queen Mary University of London
 
 
