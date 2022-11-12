@@ -17,7 +17,12 @@
 * [Wio Terminal Edge Impulse Audio Scene Recognition with Built-in Microphone](https://wiki.seeedstudio.com/Wio-Terminal-TinyML-EI-3/) 
 
 ### Apps
-* [BirdNET](https://birdnet.cornell.edu/)
+* [BirdNET](https://birdnet.cornell.edu/) from Cornell University, USA
+* [Merlin](https://merlin.allaboutbirds.org/) also from Cornell University, USA
+* [eBird](https://ebird.org/about/)
+* [iNaturalist](https://www.inaturalist.org/)
+* [Warblr](https://www.warblr.co.uk/) from Queen Mary University of London
+
 
 ### Papers on ARU
 
