@@ -35,6 +35,10 @@
 * Sturley, Sean, and Santiago Matalonga. "PANDI: a hybrid open source edge-based system for environmental and real-time passive acoustic monitoring-prototype design and development." 2020 1st International conference on innovative research in applied science, engineering and technology (IRASET). IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9092006)
 * Kahl, Stefan, et al. "BirdNET: A deep learning solution for avian diversity monitoring." _Ecological Informatics_ 61 (2021): 101236. [(HTML)](https://www.sciencedirect.com/science/article/pii/S1574954121000273)
 
+### Papers on Raspberry Pi-based monitoring systems
+
+* Abdullah, Harnan M., et al. "Raspberry Pi Based IoT for Aquaculture Realtime Remote Monitoring System with Self Energy Harvesting." _IOP Conference Series: Materials Science and Engineering_. Vol. 1077. No. 1. IOP Publishing, 2021. [(PDF)](https://iopscience.iop.org/article/10.1088/1757-899X/1077/1/012062)
+
 ### Our Papers
 
 * Zabidi, Muhammad Munim, et al. "Bird Sound Detection with Binarized Neural Networks." _ELEKTRIKA-Journal of Electrical Engineering 21.1_ (2022): 48-53. [(PDF)](https://elektrika.utm.my/index.php/ELEKTRIKA_Journal/article/download/349/221)
