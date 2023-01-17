@@ -39,6 +39,7 @@
 * Nagy, Kristóf, et al. "Internet of Birds (IoB): Song Based Bird Sensing via Machine Learning in the Cloud: How to sense, identify, classify birds based on their songs?." 2020 _IEEE SENSORS_. IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9278714)
 * Sturley, Sean, and Santiago Matalonga. "PANDI: a hybrid open source edge-based system for environmental and real-time passive acoustic monitoring-prototype design and development." 2020 1st International conference on innovative research in applied science, engineering and technology (IRASET). IEEE, 2020.[(PDF)](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9092006)
 * Kahl, Stefan, et al. "BirdNET: A deep learning solution for avian diversity monitoring." _Ecological Informatics_ 61 (2021): 101236. [(HTML)](https://www.sciencedirect.com/science/article/pii/S1574954121000273)
+* Crunchant, Anne-Sophie, et al. "Acoustic sensors." _Conservation Technology_ (2021): 53. (https://books.google.com.my/books?hl=en&lr=&id=DHo8EAAAQBAJ&oi=fnd&pg=PA53&dq=Acoustic+sensors+crunchant#v=onepage&q=Acoustic%20sensors%20crunchant&f=false)
 
 ### Papers on Raspberry Pi-based monitoring systems
 
