@@ -17,6 +17,13 @@
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
+// ── Shared ARGUS helpers ────────────────────────────────────────────────
+// DWT timing macros and the system storage breakdown -- see
+// libraries/ARGUS_Common/src/ARGUS_Common.h. Install this library (copy
+// libraries/ARGUS_Common into your Arduino libraries folder, or open the
+// .ino via the repo checkout) before compiling this sketch.
+#include <ARGUS_Common.h>
+
 // ── INA219 Power Monitor ──────────────────────────────────────────────
 // Hardware: INA219 I2C breakout wired to Portenta SDA/SCL.
 // Tracks bus voltage, current, power per inference cycle, and
@@ -70,21 +77,8 @@ uint8_t *tensor_arena = nullptr;
 // installed library's schema_generated.h enum (older numbering).
 static tflite::MicroMutableOpResolver<7> resolver;
 
-// ── DWT Cycle Counter ─────────────────────────────────────────────────
-// Provides µs-accurate inference timing independent of Serial overhead.
-// At 480 MHz: 1 cycle ≈ 2.083 ns → DWT_US(cyc) gives µs.
-#define DWT_ENABLE()                                                           \
-  do {                                                                         \
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;                            \
-    DWT->CYCCNT = 0;                                                           \
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;                                       \
-  } while (0)
-#define DWT_RESET()                                                            \
-  do {                                                                         \
-    DWT->CYCCNT = 0;                                                           \
-  } while (0)
-#define DWT_CYCLES() (DWT->CYCCNT)
-#define DWT_US(cyc) ((float)(cyc) / 480.0f) // µs at 480 MHz
+// DWT_ENABLE()/DWT_RESET()/DWT_CYCLES()/DWT_US() now live in
+// ARGUS_Common.h -- see the #include near the top of this file.
 
 // ── Power helper ──────────────────────────────────────────────────────
 struct PowerSample {
@@ -127,51 +121,8 @@ void topK(TfLiteTensor *out, int n_classes, int k, int *top_idx,
 }
 
 // ── Memory Profiling Helpers ───────────────────────────────────────────
-void printSystemStorage() {
-  Serial.println(F("\n╔══════════════════════════════════════════╗"));
-  Serial.println(F("║      SYSTEM STORAGE (FLASH & RAM)        ║"));
-  Serial.println(F("╚══════════════════════════════════════════╝"));
-
-  mbed_stats_sys_t sys_stats;
-  mbed_stats_sys_get(&sys_stats);
-
-  uint32_t total_flash = 0;
-  uint32_t total_ram = 0;
-  for (int i = 0; i < MBED_MAX_MEM_REGIONS; i++) {
-    total_flash += sys_stats.rom_size[i];
-    total_ram += sys_stats.ram_size[i];
-  }
-
-  Serial.println(F("  [HARDWARE TOTALS]"));
-  Serial.print(F("    Total ROM (Flash) : "));
-  Serial.print(total_flash / 1024.0f, 2);
-  Serial.println(F(" KB"));
-  Serial.print(F("    Total RAM         : "));
-  Serial.print(total_ram / 1024.0f, 2);
-  Serial.println(F(" KB"));
-
-#if defined(__GNUC__)
-  uint32_t text_size = (uint32_t)&__etext - sys_stats.rom_start[0];
-  uint32_t data_size = (uint32_t)&__data_end__ - (uint32_t)&__data_start__;
-  uint32_t used_flash = text_size + data_size;
-  uint32_t free_flash = total_flash > used_flash ? total_flash - used_flash : 0;
-
-  Serial.println(F("\n  [FLASH USAGE ESTIMATE]"));
-  Serial.print(F("    Total Used Flash  : "));
-  Serial.print(used_flash);
-  Serial.println(F(" B"));
-  Serial.print(F("    Remaining Flash   : "));
-  Serial.print(free_flash);
-  Serial.print(F(" B ("));
-  Serial.print((float)free_flash / 1024.0f, 2);
-  Serial.println(F(" KB)"));
-  if (total_flash > 0) {
-    Serial.print(F("    Flash Utilization : "));
-    Serial.print(((float)used_flash / total_flash) * 100.0f, 1);
-    Serial.println(F(" %"));
-  }
-#endif
-}
+// printSystemStorage() now lives in ARGUS_Common.h as
+// argus_print_system_storage() -- see the #include above.
 
 void printFirmwareRAM() {
   Serial.println(F("\n╔══════════════════════════════════════════╗"));
@@ -331,7 +282,7 @@ void setup() {
   Serial.println(output->params.zero_point);
 
   // ── 7. Print memory breakdown ──────────────────────────────────────
-  printSystemStorage();
+  argus_print_system_storage();
   printFirmwareRAM();
 
   Serial.println(F("\nInit complete — starting inference loop"));

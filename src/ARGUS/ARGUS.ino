@@ -8,6 +8,13 @@
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
+// Shared ARGUS helpers: DWT timing macros, fast_log10f, StageRAM profiling,
+// and the system storage breakdown -- see
+// libraries/ARGUS_Common/src/ARGUS_Common.h. Install this library (copy
+// libraries/ARGUS_Common into your Arduino libraries folder, or open the
+// .ino via the repo checkout) before compiling this sketch.
+#include <ARGUS_Common.h>
+
 // Include INA219 Power Monitor
 #include <Adafruit_INA219.h>
 #include <Wire.h>
@@ -26,24 +33,6 @@ unsigned long lastPowerMs = 0;
 
 // Include Mel Tables — MynaNet (64-bin, 512-pt FFT)
 #include "mynanet_mel_tables_64.h"
-
-// ──────────────────────────────────────────────────────────────────────────────
-// DWT Cycle Counter — µs-accurate timing (same pattern as MyDrongo)
-// ──────────────────────────────────────────────────────────────────────────────
-// Cortex-M7 DWT.CYCCNT is a 32-bit free-running counter at the core clock.
-// On Portenta H7 M7 core @ 480 MHz: 1 cycle = 2.083 ns → divide by 480 for µs.
-// Overflow every ~8.95 s; subtraction is safe via uint32 modular arithmetic for
-// windows < 8 s (all pipeline stages are << 1 s).
-//
-// WHY DWT instead of micros():
-//   micros() has ~4 µs resolution and includes Mbed OS scheduler overhead.
-//   Serial.print() calls add 5–15 ms per line if they straddle a timed region.
-//   DWT captures cycles BEFORE any print, eliminating UART-induced inflation.
-#define DWT_ENABLE()  do { CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; \
-                           DWT->CYCCNT = 0; DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk; } while(0)
-#define DWT_RESET()   do { DWT->CYCCNT = 0; } while(0)
-#define DWT_CYCLES()  (DWT->CYCCNT)
-#define DWT_US(cyc)   ((float)(cyc) / 480.0f)   // µs at 480 MHz
 
 // ── Audio Configuration ───────────────────────────────────────────────────────
 const int micPin           = A1;
@@ -148,18 +137,8 @@ uint8_t *myna_tensor_arena   = nullptr;  // allocated in SDRAM
 static float scoreHistory[3]  = {0.0f, 0.0f, 0.0f};
 static int   scoreHistIdx     = 0;
 
-// ── Helper: fast_log10f ───────────────────────────────────────────────────────
-// IEEE-754 exponent trick: ~10 cycles vs ~150 for libm log10f.
-// Error < 0.5 dB — negligible after min-max normalisation.
-// Reference: Schraudolph (1999), Neural Computation.
-static inline float fast_log10f(float x) {
-  if (x <= 0.0f) return -100.0f;
-  uint32_t bits;
-  memcpy(&bits, &x, sizeof(bits));
-  int   exp  = (int)((bits >> 23) & 0xFF) - 127;
-  float mant = (float)(bits & 0x7FFFFF) * (1.0f / (float)0x800000);
-  return (exp + mant) * 0.30103f; // log10 = log2 × log10(2)
-}
+// fast_log10f now lives in ARGUS_Common.h as argus_fast_log10f() -- see
+// the #include near the top of this file.
 
 // ──────────────────────────────────────────────────────────────────────────────
 // initMelFFT — MyDrongo  (16-mel, 1024-pt RFFT)
@@ -352,7 +331,7 @@ void computeMelSpectrogram(int16_t *audio, int audioLength, float *melOut) {
       for (; k < width; k++) {
         acc += P[k] * W[k];
       }
-      melRow[m] = 10.0f * fast_log10f(acc + 1e-10f);
+      melRow[m] = 10.0f * argus_fast_log10f(acc + 1e-10f);
     }
   }
 
@@ -433,7 +412,7 @@ void computeMelSpectrogram_Myna(int16_t *audio, int audioLength, float *melOut) 
       float safe_acc = (acc > 1e-10f) ? acc : 1e-10f;
       // IMPORTANT: MynaNet expects input shape (1, 64, 300, 1), i.e., [mels, frames]
       // where the frames dimension varies fastest.
-      melOut[m * n_frames_myna + f] = 10.0f * fast_log10f(safe_acc);
+      melOut[m * n_frames_myna + f] = 10.0f * argus_fast_log10f(safe_acc);
     }
   }
 

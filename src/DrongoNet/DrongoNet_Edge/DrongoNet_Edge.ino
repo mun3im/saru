@@ -16,6 +16,13 @@
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
+// ── Shared ARGUS helpers ─────────────────────────────────────────────────────
+// DWT timing macros, fast_log10f, ArgusStageRAM profiling -- see
+// libraries/ARGUS_Common/src/ARGUS_Common.h. Install this library (copy
+// libraries/ARGUS_Common into your Arduino libraries folder, or open the
+// .ino via the repo checkout) before compiling this sketch.
+#include <ARGUS_Common.h>
+
 // ── SDRAM (Portenta H7 — 8 MB at 0x60000000) ────────────────────────────────
 #include <SDRAM.h>
 
@@ -90,16 +97,6 @@ uint8_t *tensor_arena = nullptr; // filled in setup() via SDRAM.malloc()
 } // namespace
 
 // =========================================================
-// DWT Cycle Counter — µs-accurate timing
-// At 480 MHz: 1 cycle ≈ 2.083 ns → divide by 480 for µs.
-// =========================================================
-#define DWT_ENABLE()  do { CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; \
-                           DWT->CYCCNT = 0; DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk; } while(0)
-#define DWT_RESET()   do { DWT->CYCCNT = 0; } while(0)
-#define DWT_CYCLES()  (DWT->CYCCNT)
-#define DWT_US(cyc)   ((float)(cyc) / 480.0f)
-
-// =========================================================
 // CMSIS-DSP FFT instance + working buffers
 // ── DTCM placement ───────────────────────────────────────
 // These arrays form the FFT working set (~10 KB total).
@@ -149,16 +146,9 @@ static MelFilterFlat melFiltersFlat[MEL_N_MELS];     // 80 × 12 B = 960 B BSS
 static float scoreHistory[3]  = {0.0f, 0.0f, 0.0f};
 static int   scoreHistIdx      = 0;
 
-// =========================================================
-// StageRAM — snapshot struct for per-stage RAM profiling.
-// Must be at global scope before any function definition.
-// =========================================================
-struct StageRAM {
-  uint32_t heap_current;
-  uint32_t heap_peak;
-  uint32_t stack_hwm;
-  uint32_t stack_reserved;
-};
+// ArgusStageRAM/snapshotRAM/printStageDelta/fast_log10f now live in
+// ARGUS_Common.h as ArgusStageRAM/argus_snapshot_ram()/
+// argus_print_stage_delta()/argus_fast_log10f() -- see the #include above.
 
 // INA219
 Adafruit_INA219 ina219;
@@ -171,9 +161,6 @@ static bool firstLoopDone = false;
 // =========================================================
 // Forward declarations
 // =========================================================
-StageRAM snapshotRAM();
-void printStageDelta(const char *label, const StageRAM &before,
-                     const StageRAM &after);
 void printTFLMMemory();
 void printFlashMemory();
 void printFirmwareRAM();
@@ -306,36 +293,6 @@ void printTFLMMemory() {
 // =========================================================
 // FIRMWARE RAM BREAKDOWN
 // =========================================================
-StageRAM snapshotRAM() {
-  StageRAM s = {0, 0, 0, 0};
-
-  mbed_stats_heap_t heap;
-  mbed_stats_heap_get(&heap);
-  s.heap_current = (uint32_t)heap.current_size;
-  s.heap_peak    = (uint32_t)heap.max_size;
-
-  int cnt = osThreadGetCount();
-  if (cnt <= 0 || cnt > 32)
-    return s;
-
-  mbed_stats_stack_t *stk =
-      (mbed_stats_stack_t *)malloc(cnt * sizeof(mbed_stats_stack_t));
-  if (!stk)
-    return s;
-
-  int got = mbed_stats_stack_get_each(stk, cnt);
-  uint32_t best = 0;
-  for (int i = 0; i < got; i++) {
-    if (stk[i].reserved_size > best) {
-      best              = stk[i].reserved_size;
-      s.stack_hwm       = stk[i].max_size;
-      s.stack_reserved  = stk[i].reserved_size;
-    }
-  }
-  free(stk);
-  return s;
-}
-
 void printFirmwareRAM() {
   Serial.println(F("\n╔══════════════════════════════════════════╗"));
   Serial.println(F("║      FIRMWARE RAM BREAKDOWN              ║"));
@@ -457,32 +414,6 @@ void printFirmwareRAM() {
   Serial.print(F(" B  = "));
   Serial.print(arena_slack / 1024.0f, 2);
   Serial.println(F(" KB"));
-}
-
-void printStageDelta(const char *label, const StageRAM &before,
-                     const StageRAM &after) {
-  Serial.print(F("  Stage ["));
-  Serial.print(label);
-  Serial.print(F("]  stack HWM delta = +"));
-  int32_t ds = (int32_t)after.stack_hwm - (int32_t)before.stack_hwm;
-  int32_t dh = (int32_t)after.heap_peak - (int32_t)before.heap_peak;
-  Serial.print(ds >= 0 ? ds : 0);
-  Serial.print(F(" B   heap peak delta = +"));
-  Serial.println(dh >= 0 ? dh : 0);
-}
-
-// =========================================================
-// fast_log10f — IEEE-754 exponent trick (~10 cycles vs ~150)
-// =========================================================
-// Extracts the binary exponent from the float bit pattern.
-// Total error < 0.5 dB — negligible after min-max normalisation.
-static inline float fast_log10f(float x) {
-  if (x <= 0.0f) return -100.0f;
-  uint32_t bits;
-  memcpy(&bits, &x, sizeof(bits));
-  int   exp  = (int)((bits >> 23) & 0xFF) - 127;
-  float mant = (float)(bits & 0x7FFFFF) * (1.0f / (float)0x800000);
-  return (exp + mant) * 0.30103f; // log10 = log2 × log10(2)
 }
 
 // =========================================================
@@ -613,7 +544,7 @@ void computeMelSpectrogram(int16_t *audio, int audioLength, float *melOut) {
       }
 
       // Power → dB using fast IEEE-754 log10 approximation
-      melRow[m] = 10.0f * fast_log10f(acc + 1e-10f);
+      melRow[m] = 10.0f * argus_fast_log10f(acc + 1e-10f);
     }
   } // end frame loop
 
@@ -813,9 +744,9 @@ void loop() {
   unsigned long startTime = millis();
 
   // ── STAGE 1: Audio capture ───────────────────────────────────────
-  StageRAM before_capture = snapshotRAM();
+  ArgusStageRAM before_capture = argus_snapshot_ram();
   captureAudio();
-  StageRAM after_capture = snapshotRAM();
+  ArgusStageRAM after_capture = argus_snapshot_ram();
   unsigned long captureTime = millis() - startTime;
 
   // ── RMS Energy Gate ──────────────────────────────────────────────
@@ -841,7 +772,7 @@ void loop() {
   }
 
   // ── STAGE 2: Mel Spectrogram (FFT-based) ─────────────────────────
-  StageRAM before_mel = snapshotRAM();
+  ArgusStageRAM before_mel = argus_snapshot_ram();
 
   // DWT-based cycle measurement for µs-accurate mel timing.
   DWT_RESET();
@@ -851,7 +782,7 @@ void loop() {
   unsigned long melTime = millis() - melStart;
   float melUs = DWT_US(melCycles);
 
-  StageRAM after_mel = snapshotRAM();
+  ArgusStageRAM after_mel = argus_snapshot_ram();
 
   // ── STAGE 3: Quantise and fill input tensor ───────────────────────
   // melFeatures[] is in [0, 1]; dequantise to INT8 using
@@ -865,11 +796,11 @@ void loop() {
   }
 
   // ── STAGE 4: Inference ────────────────────────────────────────────
-  StageRAM before_infer = snapshotRAM();
+  ArgusStageRAM before_infer = argus_snapshot_ram();
   unsigned long inferStart = millis();
   TfLiteStatus invoke_status = interpreter->Invoke();
   unsigned long inferTime = millis() - inferStart;
-  StageRAM after_infer = snapshotRAM();
+  ArgusStageRAM after_infer = argus_snapshot_ram();
 
   if (invoke_status != kTfLiteOk) {
     Serial.println(F("[ERR] Invoke() failed — check arena size / model compatibility."));
@@ -926,9 +857,9 @@ void loop() {
   const uint32_t LOG_INTERVAL = 10;
   if (++loopCount % LOG_INTERVAL == 0) {
     Serial.println(F("\n--- Transient RAM per pipeline stage ---"));
-    printStageDelta("1_capture", before_capture, after_capture);
-    printStageDelta("2_mel    ", before_mel, after_mel);
-    printStageDelta("3_infer  ", before_infer, after_infer);
+    argus_print_stage_delta("1_capture", before_capture, after_capture);
+    argus_print_stage_delta("2_mel    ", before_mel, after_mel);
+    argus_print_stage_delta("3_infer  ", before_infer, after_infer);
 
     mbed_stats_heap_t heap;
     mbed_stats_heap_get(&heap);

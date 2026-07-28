@@ -1,5 +1,5 @@
-docs/Guide_01_Microphone.md// Analog Microphone Test with LED Sound Detection Indicator
-// MAX4466 connected to A0
+// Analog Microphone Test with LED Sound Detection Indicator
+// MAX4466 connected to A1
 // Uses built-in RGB LEDs for visual feedback
 
 const int microphonePin = A1;

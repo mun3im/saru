@@ -5,14 +5,23 @@
 // Audio:       3 sec @ 16 kHz, 48 000 samples
 // n_fft:       512   (256 unique FFT bins: 0 .. N/2 inclusive = 257)
 // hop_length:  160   (10 ms per frame)
-// win_length:  512   (Hann window matches n_fft — no zero-padding needed)
-// center:      False (matches training pipeline — no edge-padding)
+// win_length:  400, zero-padded to 512 for the FFT (librosa's default
+//              win_length when hop_length=160 and n_fft=512 -- see
+//              initMelFFT_Myna()'s pad_left/win_length constants)
+// center:      True  (matches the ARGUS.ino firmware's actual framing:
+//              computeMelSpectrogram_Myna() centres each frame on
+//              start_idx = f*hop_length - n_fft/2, with librosa's
+//              default reflect-padding at both signal edges -- NOT
+//              non-centred left-aligned framing)
 //
-// Time frames: floor((48000 - 512) / 160) + 1 = floor(47488/160) + 1 = 296 + 1 = 297
-//              NOTE: librosa non-center gives 297 frames for these params.
-//              We use MYNANET_TIME_FRAMES = 297 here.
-//              The model was trained with n_frames = 300, so the last 3 cols
-//              are zero-padded in the MCU firmware.
+// Time frames: with center=True and hop_length=160 over a 48 000-sample
+//              clip, librosa's frame count is
+//              1 + floor(48000 / 160) = 1 + 300 = 301, matching (to within
+//              the model's fixed 300) the firmware's MYNANET_TIME_FRAMES.
+//              An earlier version of this comment described non-centred
+//              (center=False) framing giving 297 frames; that described a
+//              different convention than what the firmware actually
+//              implements and has been corrected to match the real code.
 //
 // Filter bank edges computed via Slaney-style mel scale (librosa default htk=False):
 //   mel = hz * 3 / 200.0 (for hz < 1000)
