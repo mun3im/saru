@@ -1,6 +1,6 @@
 # ARGUS
 
-## Asymmetric Real-time Guardian for Ultra-efficient Species Monitoring
+## Asymmetric Responsive Guardian for Uninterrupted Species Monitoring
 
 ------------------------------------------------------------------------
 
@@ -24,5 +24,5 @@ ARGUS represents three aligned dimensions:
 |------------------|------------|------------|----------------------------------|
 | **Ornithological** | **Great Argus (*Argusianus argus*)** | • Native to Peninsular Malaysia, Sumatra, Borneo  <br>• Males display 100+ eye-like ocelli  <br>• IUCN Near Threatened (habitat loss)  <br>• Known in Malay as *Kuang Raja* (King Pheasant)  <br>• "Bulu Seribu Mata" (thousand-eyed feathers) | Native ecological anchor  <br>Embodiment of vigilance  <br>Conservation relevance |
 | **Mythological** | **Argus Panoptes** | • Hundred-eyed Greek guardian  <br>• Never fully slept | Perpetual vigilance  <br>Tiered architecture — not all “eyes” close at once |
-| **Engineering** | **ARGUS Acronym** | **A**symmetric  <br>**R**eal-time  <br>**G**uardian  <br>for  <br>**U**ltra-efficient  <br>**S**pecies monitoring | Direct architectural description  <br>Gatekeeper-centric philosophy |
+| **Engineering** | **ARGUS Acronym** | **A**symmetric  <br>**R**esponsive  <br>**G**uardian  <br>for  <br>**U**ninterrupted  <br>**S**pecies monitoring | Direct architectural description  <br>Gatekeeper-centric philosophy |
 

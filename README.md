@@ -1,8 +1,8 @@
 # ARGUS
 
-**Asymmetric Real-time Guardian for Ultra-efficient Species Monitoring**
+**Asymmetric Responsive Guardian for Uninterrupted Species Monitoring**
 
-ARGUS is an ultra-efficient, two-tier acoustic biologger designed for
+ARGUS is an uninterrupted, two-tier acoustic biologger designed for
 long-term wildlife monitoring in remote environments.
 
 Inspired by *Argus Panoptes* --- the guardian who never slept --- ARGUS
