@@ -15,7 +15,7 @@ const int micPin = A0;
 const float SAMPLE_RATE_HZ = 16000.0f;  // requested Fs
 const int   BLOCK_SIZE     = 16;        // AudioMoth's narrowest window option -> widest passband
 const float TARGET_FREQ_HZ = 3000.0f;   // re-centred lower to cover the ~2 kHz content that was being missed
-const float MAG_THRESHOLD  = 400.0f;    // measured: idle ~42-96, signal ~249-488
+const float MAG_THRESHOLD  = 150.0f;    // measured against real House Crow calls: idle ~52-75, signal ~114-294
 
 const int ADC_MIDPOINT = 512;  // remove DC bias (10-bit ADC)
 

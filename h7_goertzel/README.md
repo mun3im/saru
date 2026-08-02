@@ -40,9 +40,24 @@ measurement rather than guesswork:
 3. **Widened for coverage, not just loudness.** Dropped to a 16-sample
    window (AudioMoth's own narrowest/widest-passband option) re-centred at
    3 kHz — Fs/N = 1000 Hz per bin (Q≈3) — trading selectivity for a much
-   wider response. Re-measured: idle ~42–96, real signal ~249–550.
-   `MAG_THRESHOLD = 400` sits with ~4x margin above the idle floor and
-   reliably triggers `BIRD` on real audio.
+   wider response. Re-measured against a loud ebird.com clip: idle ~42–96,
+   signal ~249–550. `MAG_THRESHOLD = 400` looked right for that source.
+4. **Threshold is source-dependent — re-measure per real sound, don't
+   assume one calibration transfers.** Testing against a real House Crow
+   call with the same 400 threshold produced zero detections: idle ~52–75,
+   but the crow calls themselves only reached ~114–294, never crossing
+   400. Lowered `MAG_THRESHOLD` to 150 based on that measurement.
+5. **Field test against local species**, with the 3 kHz-centred filter and
+   threshold 150:
+   - House Crow — detected reliably.
+   - Large-tailed Nightjar — detected reliably.
+   - Zebra Dove — missed entirely (readings stayed flat in the idle range,
+     44–76, no elevation at all). Zebra Dove coos sit well under 1 kHz,
+     outside this filter's ~2–4 kHz passband — a passband-shape gap, not a
+     threshold problem. No fix applied; low priority for now. If it needs
+     fixing later, the lever is a second, lower-centred Goertzel filter (or
+     re-centring this one lower, trading off the species that need the
+     higher band) — not further threshold tuning.
 
 Current working parameters (`goertzel_m4/goertzel_m4.ino`):
 
@@ -51,7 +66,7 @@ Current working parameters (`goertzel_m4/goertzel_m4.ino`):
 | `SAMPLE_RATE_HZ` | 16000 | requested Fs |
 | `BLOCK_SIZE` (N) | 16 | AudioMoth's narrowest/widest-passband window option |
 | `TARGET_FREQ_HZ` | 3000 | re-centred to cover ~2 kHz content the narrower filter missed |
-| `MAG_THRESHOLD` | 400 | measured: idle ~42-96, signal ~249-550 |
+| `MAG_THRESHOLD` | 150 | measured against real House Crow calls: idle ~52-75, signal ~114-294 |
 | `ADC_MIDPOINT` | 512 | this board's measured idle ADC centre (10-bit `analogRead`) |
 
 If detection quality regresses again (new mic, new enclosure, different
