@@ -115,7 +115,7 @@ per-cycle-efficiency read.
 | Platform | Core | Goertzel (us) | DrongoNet-Micro mel+infer (us) | DrongoNet / Goertzel |
 |---|---|---:|---:|---:|
 | Portenta H7 | M4 | 2,439 | 75,132 <sup>1</sup> | **30.8x slower** |
-| Portenta H7 | M7 | 2,290 | 49,639 <sup>2</sup> | **21.7x slower** |
+| Portenta H7 | M7 | 2,290 | 44,357 <sup>2</sup> | **19.4x slower** |
 | Wio Terminal | SAMD51 | 8,541.6 | 238,580 <sup>3</sup> | **27.9x slower** |
 | M5Stack Core2 <sup>†</sup> | ESP32 | 11,550 | 401,112 <sup>4</sup> | **34.7x slower** |
 
@@ -123,9 +123,16 @@ per-cycle-efficiency read.
 Micro, fastlog+sparse mel — the current default config), see commit
 `152b303`: mel 44,853us + infer 30,279us = 75,132us.
 
-<sup>2</sup> `DRONGONET_SPARSE_MEL_BENCHMARK.md`, M7 Micro fastlog row
-(10-sample average, not 100 — only M4 Goertzel and M4 DrongoNet have been
-re-run at N=100 so far): mel 29,901.9us + infer 19,737.4us = 49,639.3us.
+<sup>2</sup> Re-run this session at N=100 (`h7_drongonet_m7_instrumented`,
+Micro, fastlog+sparse — same config as the M4 figure), superseding
+`DRONGONET_SPARSE_MEL_BENCHMARK.md`'s original 10-sample average (mel
+29,901.9us + infer 19,737.4us = 49,639.3us, ~10.6% higher than the
+N=100 re-run — a real difference, not just noise narrowing with more
+samples): mel 26,849.0us + infer 17,508.2us = 44,357.3us. Clean 100/100
+run, no gate skips, no errors. `h7_drongonet_m7_instrumented.ino` gained
+a `CHARACTERIZE_COUNT`-based averaging block for this (previously ran
+unbounded, printing every loop) — same convention the M4 sketch already
+used.
 
 <sup>3</sup> `WIO_TERMINAL_DRONGONET_LATENCY.md`, Micro row (10-sample
 average, CMSIS-DSP-optimized build): mel 141.12ms + infer 97.47ms =
@@ -140,7 +147,7 @@ row above it. This ratio (34.7x) is the same comparison
 `M5STACK_DUALCORE_BENCHMARK.md` itself already reports, rounded there to
 "~35x".
 
-**The ~22-35x ratio holds across all four platforms**, not just
+**The ~19-35x ratio holds across all four platforms**, not just
 Portenta — this is the whole point of ARGUS's asymmetric cascade design
 (see `HOW_ARGUS_WORKS.md`): a consistently ~20-35x-cheaper always-on gate
 is what makes running the heavier classifier conditionally, rather than
@@ -201,7 +208,7 @@ Portenta-M4-vs-SAMD51 efficiency gap matters for a future writeup.
 
 - Single fixed-frequency filter vs. a full 16-mel/184-frame spectrogram +
   4-layer CNN — this is not an apples-to-apples "detector quality"
-  comparison, only compute cost. Goertzel's ~22-35x latency advantage
+  comparison, only compute cost. Goertzel's ~19-35x latency advantage
   comes with materially narrower/coarser detection (single ~1kHz-wide
   passband at 3kHz vs. DrongoNet's full learned spectral+temporal
   pattern), matching the known Zebra Dove miss documented in
@@ -219,10 +226,10 @@ Portenta-M4-vs-SAMD51 efficiency gap matters for a future writeup.
   for fixed block/window size, confirmed by each platform's own tight
   jitter), but it does mean the reported `peakMag`/`blocksAboveThreshold`
   sanity values aren't comparable across platforms.
-- DrongoNet comparison figures are a mix of N=100 (Portenta M4 only) and
-  N=10 (Portenta M7, Wio Terminal, M5Stack) characterization runs — not
-  independently re-verified at matching sample sizes across platforms in
-  this pass.
+- DrongoNet comparison figures are a mix of N=100 (Portenta M4 and M7)
+  and N=10 (Wio Terminal, M5Stack) characterization runs — Wio
+  Terminal/M5Stack not independently re-verified at matching sample
+  sizes in this pass.
 - **M5Stack's figure is extrapolated and condition-mismatched with the
   other three**, not a like-for-like measurement: it's a 187.5x linear
   scale-up from a 256-sample-chunk average (not a direct 3000-block/
