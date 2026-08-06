@@ -116,7 +116,7 @@ per-cycle-efficiency read.
 |---|---|---:|---:|---:|
 | Portenta H7 | M4 | 2,439 | 75,132 <sup>1</sup> | **30.8x slower** |
 | Portenta H7 | M7 | 2,290 | 44,357 <sup>2</sup> | **19.4x slower** |
-| Wio Terminal | SAMD51 | 8,541.6 | 238,580 <sup>3</sup> | **27.9x slower** |
+| Wio Terminal | SAMD51 | 8,541.6 | 238,684 <sup>3</sup> | **27.9x slower** |
 | M5Stack Core2 <sup>†</sup> | ESP32 | 11,550 | 401,112 <sup>4</sup> | **34.7x slower** |
 
 <sup>1</sup> This session's own 100-run M4 characterization (`h7_drongonet_m4_instrumented`,
@@ -134,9 +134,15 @@ a `CHARACTERIZE_COUNT`-based averaging block for this (previously ran
 unbounded, printing every loop) — same convention the M4 sketch already
 used.
 
-<sup>3</sup> `WIO_TERMINAL_DRONGONET_LATENCY.md`, Micro row (10-sample
-average, CMSIS-DSP-optimized build): mel 141.12ms + infer 97.47ms =
-238.58ms = 238,580us.
+<sup>3</sup> Re-run this session at N=100 (`wt_drongonet_micro_bench.ino`,
+`NUM_RUNS` bumped 10→100), superseding `WIO_TERMINAL_DRONGONET_LATENCY.md`'s
+original 10-sample average (mel 141.12ms + infer 97.47ms = 238.58ms =
+238,580us): mel 141,125.1us + infer 97,559.0us = 238,684.1us — only
+~0.04% higher than the N=10 figure, unlike M7's ~10.6% shift. Makes
+sense: this bench uses synthetic/deterministic input with fixed-shape
+compute (no real-mic variance to average out), so N=10 vs. N=100
+shouldn't differ much, and it didn't. Clean 100/100 run, tight jitter
+(mel 141,120-141,130us; infer 97,558-97,561us).
 
 <sup>4</sup> `M5STACK_DUALCORE_BENCHMARK.md`'s own DrongoNet Micro figure,
 same 30s concurrent-MP3+SD-load run as the Goertzel figure it's paired
@@ -226,10 +232,9 @@ Portenta-M4-vs-SAMD51 efficiency gap matters for a future writeup.
   for fixed block/window size, confirmed by each platform's own tight
   jitter), but it does mean the reported `peakMag`/`blocksAboveThreshold`
   sanity values aren't comparable across platforms.
-- DrongoNet comparison figures are a mix of N=100 (Portenta M4 and M7)
-  and N=10 (Wio Terminal, M5Stack) characterization runs — Wio
-  Terminal/M5Stack not independently re-verified at matching sample
-  sizes in this pass.
+- DrongoNet comparison figures are a mix of N=100 (Portenta M4, Portenta
+  M7, Wio Terminal) and N=10 (M5Stack) characterization runs — M5Stack
+  not yet re-verified at matching sample size (pending hardware swap).
 - **M5Stack's figure is extrapolated and condition-mismatched with the
   other three**, not a like-for-like measurement: it's a 187.5x linear
   scale-up from a 256-sample-chunk average (not a direct 3000-block/
