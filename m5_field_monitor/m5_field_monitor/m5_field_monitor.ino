@@ -62,10 +62,19 @@ constexpr int MEL_BINS       = 16;
 constexpr int TIME_FRAMES    = 184;
 constexpr int INPUT_SIZE     = MEL_BINS * TIME_FRAMES;  // 2944
 constexpr int WINDOW_SAMPLES = 48000;  // 3s @ 16kHz
-constexpr float BIRD_SCORE_THRESHOLD = 0.8f;  // Portenta Nano's calibrated value -- Micro itself uncalibrated on any hardware, placeholder
+// Calibrated live on real hardware (phone-playback bird-sound test, this
+// room, 2026-08-06): quiet baseline (aircon hum) topped out ~0.54-0.57
+// across four separate quiet stretches; sustained "on" (bird sounds
+// playing) bottomed out ~0.62, typically sat 0.65-0.90. 0.8 (the old
+// Portenta-Nano-borrowed placeholder) sat well above where the real
+// signal actually lives, catching only 18 of ~90 "on" windows. 0.60 sits
+// in the measured gap -- small margin above the quiet ceiling, catches
+// the large majority of "on" windows measured. Re-calibrate again if
+// the deployment room's noise floor differs meaningfully from this one.
+constexpr float BIRD_SCORE_THRESHOLD = 0.60f;
 
 // ==================== Monitor control ====================
-constexpr unsigned long MONITOR_DURATION_MS = 60000UL;  // SMOKE TEST: 1 minute -- restore to 3600000UL (1hr) for the real field run
+constexpr unsigned long MONITOR_DURATION_MS = 3600000UL;  // 1 hour -- real field run (was 60000UL smoke-test)
 constexpr int MP3_BITRATE_KBPS = 32;
 
 volatile bool g_detectorTaskDone = false;
