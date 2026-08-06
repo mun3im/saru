@@ -140,6 +140,25 @@ void initMelFFT() {
   }
 }
 
+// fastLog10f -- IEEE-754 exponent bit-trick approximation (~10 cycles vs
+// ~150 for libm log10f(), error < 0.5 dB, negligible after the per-clip
+// min-max normalize below). Same technique as ARGUS_Common.h's
+// argus_fast_log10f() / h7_drongonet_m7_instrumented.ino's fastLog10f(),
+// inlined here rather than #include-ing ARGUS_Common.h (see that
+// header's own conflict note on the M4 side of this pipeline --
+// h7_drongonet_m4_instrumented.ino's file header). Confirmed ~2-3%
+// mel-stage win on M7 in DRONGONET_SPARSE_MEL_BENCHMARK.md -- ported
+// here to close the gap between this earlier dev sketch and that
+// finding.
+static inline float fastLog10f(float x) {
+  if (x <= 0.0f) return -100.0f;
+  uint32_t bits;
+  memcpy(&bits, &x, sizeof(bits));
+  int   exp  = (int)((bits >> 23) & 0xFF) - 127;
+  float mant = (float)(bits & 0x7FFFFF) * (1.0f / (float)0x800000);
+  return (exp + mant) * 0.30103f;
+}
+
 // ===========================================================
 // Mel Spectrogram -- FFT-based, matching training pipeline
 // ===========================================================
@@ -183,7 +202,7 @@ void computeMelSpectrogram(int16_t *audio, int audioLength, float *melOut) {
         acc += P[k] * W[k];
       }
 
-      melRow[m] = 10.0f * log10f(acc + 1e-10f);
+      melRow[m] = 10.0f * fastLog10f(acc + 1e-10f);
     }
   }
 
