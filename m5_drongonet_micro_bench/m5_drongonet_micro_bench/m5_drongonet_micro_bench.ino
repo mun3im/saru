@@ -169,7 +169,15 @@ void computeMelSpectrogram16(const int16_t *audio, int audioLength, float *melOu
 }
 
 // ==================== Benchmark control ====================
-constexpr unsigned long BENCHMARK_DURATION_MS = 30000;
+// Bumped 30000->300000 (30s->5min): each window is real-time-paced by
+// live mic capture (one window forms roughly every 3s regardless of
+// compute speed), so 30s only ever produced ~10 windows -- matches
+// M5STACK_DUALCORE_BENCHMARK.md's own "10 windows" result. 300s gets
+// ~100 windows, matching the N=100 rigor now used on Portenta M4/M7 and
+// Wio Terminal (see GOERTZEL_VS_DRONGONET_LATENCY.md). Concurrent
+// MP3+SD load on Core 1 runs for the same duration (g_benchmarkDurationMs
+// is shared), unchanged in character from the original 30s pass.
+constexpr unsigned long BENCHMARK_DURATION_MS = 300000;
 volatile bool g_detectorDone = false;
 volatile bool g_mp3Done      = false;
 

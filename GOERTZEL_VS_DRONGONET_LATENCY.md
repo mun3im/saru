@@ -117,7 +117,7 @@ per-cycle-efficiency read.
 | Portenta H7 | M4 | 2,439 | 75,132 <sup>1</sup> | **30.8x slower** |
 | Portenta H7 | M7 | 2,290 | 44,357 <sup>2</sup> | **19.4x slower** |
 | Wio Terminal | SAMD51 | 8,541.6 | 238,684 <sup>3</sup> | **27.9x slower** |
-| M5Stack Core2 <sup>†</sup> | ESP32 | 11,550 | 401,112 <sup>4</sup> | **34.7x slower** |
+| M5Stack Core2 <sup>†</sup> | ESP32 | 11,550 | 401,494 <sup>4</sup> | **34.8x slower** |
 
 <sup>1</sup> This session's own 100-run M4 characterization (`h7_drongonet_m4_instrumented`,
 Micro, fastlog+sparse mel — the current default config), see commit
@@ -144,14 +144,21 @@ compute (no real-mic variance to average out), so N=10 vs. N=100
 shouldn't differ much, and it didn't. Clean 100/100 run, tight jitter
 (mel 141,120-141,130us; infer 97,558-97,561us).
 
-<sup>4</sup> `M5STACK_DUALCORE_BENCHMARK.md`'s own DrongoNet Micro figure,
-same 30s concurrent-MP3+SD-load run as the Goertzel figure it's paired
-against here (10 windows): mel 314,546.0us + infer 86,565.6us =
-401,111.6us — **not** the idle-chip `M5STACK_INFERENCE_LATENCY.md`
-figure (376.7ms), deliberately matched-condition against the Goertzel
-row above it. This ratio (34.7x) is the same comparison
-`M5STACK_DUALCORE_BENCHMARK.md` itself already reports, rounded there to
-"~35x".
+<sup>4</sup> Re-run this session at N=100 windows (`m5_drongonet_micro_bench.ino`,
+`BENCHMARK_DURATION_MS` bumped 30000→300000 — each window is real-time-
+paced by live mic capture at ~1 per 3s, so 10x the duration was needed
+for 10x the windows), same concurrent-MP3+SD-load design as the original
+run, superseding `M5STACK_DUALCORE_BENCHMARK.md`'s 10-window average
+(mel 314,546.0us + infer 86,565.6us = 401,111.6us): mel 314,424.1us
+(min 297,852 max 317,767) + infer 87,069.9us (min 83,207 max 87,804) =
+401,494.0us — only ~0.1% higher than the N=10 figure, similar to Wio
+Terminal's negligible shift and unlike M7's real ~10.6% one. Clean
+100/100 windows, zero `qDetector`/`qMp3` drops, zero SD write failures
+(8,333 MP3 frames, 292 SD writes, 1,199,952 bytes written — both scale
+linearly with the 10x longer run, as expected). Still **not** the
+idle-chip `M5STACK_INFERENCE_LATENCY.md` figure (376.7ms) —
+deliberately matched-condition against the Goertzel row above it, same
+reasoning as the original N=10 pass.
 
 **The ~19-35x ratio holds across all four platforms**, not just
 Portenta — this is the whole point of ARGUS's asymmetric cascade design
@@ -232,9 +239,9 @@ Portenta-M4-vs-SAMD51 efficiency gap matters for a future writeup.
   for fixed block/window size, confirmed by each platform's own tight
   jitter), but it does mean the reported `peakMag`/`blocksAboveThreshold`
   sanity values aren't comparable across platforms.
-- DrongoNet comparison figures are a mix of N=100 (Portenta M4, Portenta
-  M7, Wio Terminal) and N=10 (M5Stack) characterization runs — M5Stack
-  not yet re-verified at matching sample size (pending hardware swap).
+- DrongoNet comparison figures are now N=100 across all four platforms
+  (Portenta M4/M7, Wio Terminal, M5Stack) — the sample-size mismatch
+  this caveat originally flagged is resolved.
 - **M5Stack's figure is extrapolated and condition-mismatched with the
   other three**, not a like-for-like measurement: it's a 187.5x linear
   scale-up from a 256-sample-chunk average (not a direct 3000-block/
