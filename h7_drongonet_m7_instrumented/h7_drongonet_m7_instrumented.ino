@@ -135,20 +135,21 @@ int16_t audioBuffer[BUFFER_SIZE];  // 96 000 B BSS -- shared capture, fed to all
 // stalling. Flip to 1 once Edge's slow/hung inference is investigated.
 #define RUN_EDGE_INFERENCE 0
 
-// Characterization run: average Micro's mel/infer/total latency over a
-// fixed number of gated (RMS-passing) windows, then report the average
-// once and go idle -- same convention as
-// h7_drongonet_m4_instrumented.ino's CHARACTERIZE_COUNT, added here so
-// the M7 Micro figure in DRONGONET_SPARSE_MEL_BENCHMARK.md /
-// GOERTZEL_VS_DRONGONET_LATENCY.md can be re-run at the same N=100 rigor
-// as the M4 figure (previously only a 10-sample average). Nano keeps
-// reporting every loop as before -- only Micro's stats are accumulated,
-// since Micro is the only row those docs cite from this sketch.
+// Characterization run: average Nano's and Micro's mel/infer/total
+// latency over a fixed number of gated (RMS-passing) windows, then
+// report both averages once and go idle -- same convention as
+// h7_drongonet_m4_instrumented.ino's CHARACTERIZE_COUNT. Originally
+// added Micro-only (see git history); extended to also track Nano so
+// the Nano row can be re-run at the same N=100 rigor for the journal
+// submission's comparison table. Mel is shared/identical between Nano
+// and Micro by construction (same filterbank, computed once per loop),
+// so only one mel sum is needed -- each model gets its own infer sum.
 #define CHARACTERIZE_COUNT 100
-static int      characterizeCount    = 0;
-static uint32_t characterizeSumMelUs = 0;
-static uint32_t characterizeSumInferUs = 0;
-static bool     characterizeDone     = false;
+static int      characterizeCount         = 0;
+static uint32_t characterizeSumMelUs      = 0;
+static uint32_t characterizeSumInferUsNano  = 0;
+static uint32_t characterizeSumInferUsMicro = 0;
+static bool     characterizeDone          = false;
 
 // ==================== TensorFlow Lite -- Nano ====================
 namespace {
@@ -716,6 +717,14 @@ void loop() {
     return;
   }
 
+  // Guards the characterization accumulation below: only count a window
+  // toward the N=100 average if BOTH models' Invoke() succeeded on it --
+  // otherwise characterizeCount (incremented in Micro's block) and
+  // characterizeSumInferUsNano (incremented in Nano's block) could drift
+  // out of sync if either model ever failed independently, silently
+  // corrupting one model's average against a mismatched sample count.
+  bool nanoOkThisWindow = false;
+
   captureAudio();
 
   float rmsAccum = 0.0f;
@@ -788,6 +797,8 @@ void loop() {
       delay(500);
       digitalWrite(LEDR, HIGH);
     }
+
+    nanoOkThisWindow = true;
   } else {
     Serial.println(F("[NANO]  [ERR] Invoke() failed."));
   }
@@ -833,20 +844,29 @@ void loop() {
       Serial.println(F(" uJ"));
     }
 
-    characterizeSumMelUs   += (uint32_t)(melUs16 + 0.5f);
-    characterizeSumInferUs += (uint32_t)(inferUsMicro + 0.5f);
-    characterizeCount++;
-    if (characterizeCount >= CHARACTERIZE_COUNT && !characterizeDone) {
-      characterizeDone = true;
-      float avgMel   = (float)characterizeSumMelUs   / characterizeCount;
-      float avgInfer = (float)characterizeSumInferUs / characterizeCount;
-      float avgTotal = avgMel + avgInfer;
-      Serial.println();
-      Serial.println(F("=== DrongoNet-Micro M7 characterization complete ==="));
-      Serial.print(F("[AVG over ")); Serial.print(characterizeCount); Serial.println(F(" inferences]"));
-      Serial.print(F("  avg mel:   ")); Serial.print(avgMel, 1);   Serial.println(F(" us"));
-      Serial.print(F("  avg infer: ")); Serial.print(avgInfer, 1); Serial.println(F(" us"));
-      Serial.print(F("  avg total: ")); Serial.print(avgTotal, 1); Serial.println(F(" us"));
+    // Only count this window if Nano ALSO succeeded on it (see
+    // nanoOkThisWindow's declaration at the top of loop() for why) --
+    // otherwise skip accumulating entirely rather than let the two
+    // models' sums drift out of sync with characterizeCount.
+    if (!characterizeDone && nanoOkThisWindow) {
+      characterizeSumMelUs        += (uint32_t)(melUs16 + 0.5f);
+      characterizeSumInferUsNano  += (uint32_t)(inferUsNano + 0.5f);
+      characterizeSumInferUsMicro += (uint32_t)(inferUsMicro + 0.5f);
+      characterizeCount++;
+      if (characterizeCount >= CHARACTERIZE_COUNT) {
+        characterizeDone = true;
+        float avgMel        = (float)characterizeSumMelUs        / characterizeCount;
+        float avgInferNano  = (float)characterizeSumInferUsNano  / characterizeCount;
+        float avgInferMicro = (float)characterizeSumInferUsMicro / characterizeCount;
+        Serial.println();
+        Serial.println(F("=== DrongoNet Nano+Micro M7 characterization complete ==="));
+        Serial.print(F("[AVG over ")); Serial.print(characterizeCount); Serial.println(F(" inferences]"));
+        Serial.print(F("  avg mel (shared):    ")); Serial.print(avgMel, 1); Serial.println(F(" us"));
+        Serial.print(F("  NANO  avg infer: ")); Serial.print(avgInferNano, 1);
+        Serial.print(F(" us  avg total: ")); Serial.print(avgMel + avgInferNano, 1); Serial.println(F(" us"));
+        Serial.print(F("  MICRO avg infer: ")); Serial.print(avgInferMicro, 1);
+        Serial.print(F(" us  avg total: ")); Serial.print(avgMel + avgInferMicro, 1); Serial.println(F(" us"));
+      }
     }
   } else {
     Serial.println(F("[MICRO] [ERR] Invoke() failed."));

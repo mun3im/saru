@@ -28,6 +28,22 @@
 > regular-vs-sparse-vs-fastlog comparison at matched sample size, not as
 > the canonical single-cell number.
 
+> **M7 Nano/fastlog re-run at N=100** (for the journal submission's
+> comparison table): the M7 Nano fastlog row below (29901.9 / 19810.9 /
+> 49712.8 us) is also a 10-sample average -- same "left as-is, table is
+> for matched-N comparison" reasoning as the Micro note above. N=100
+> re-run (same `h7_drongonet_m7_instrumented.ino` flash, both Nano and
+> Micro characterized together against the same 100 gated windows since
+> they share one mel computation per loop): mel 26840.6 / infer 17796.5 /
+> total 44637.1 us -- ~10.2% lower than the N=10 figure here, matching
+> the direction and rough magnitude of Micro's own N=10-vs-N=100 gap
+> (both real-mic-gated runs, not synthetic, so some session-to-session
+> room/RMS-gating variance between N=10 and N=100 passes is expected
+> rather than model-specific). Micro's own re-run in this same pass
+> (44350.6 us) landed within ~7us of its earlier independent N=100
+> measurement (44357.3 us) -- good cross-validation that the N=100
+> methodology itself is stable across sessions.
+
 > **⚠ ENERGY NUMBERS INVALID (2026-08-03) -- do not cite.** The power
 > source feeding the INA219's VIN+ was a bad adapter that was backfeeding
 > current rather than delivering clean power. Confirmed by removing that

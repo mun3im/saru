@@ -9,8 +9,17 @@
 > `DRONGONET_SPARSE_MEL_BENCHMARK.md`'s own pointer note). Makes sense:
 > this bench uses synthetic/deterministic input with fixed-shape compute,
 > not real captured audio, so sample count shouldn't matter much here.
-> Nano/Edge below are unchanged, still N=10. Canonical N=100 figure lives
-> in `GOERTZEL_VS_DRONGONET_LATENCY.md`.
+> Nano/Edge below (this doc's own Wio Terminal rows) are unchanged, still
+> N=10. Canonical N=100 figure lives in `GOERTZEL_VS_DRONGONET_LATENCY.md`.
+>
+> **Portenta M7 Nano also re-run at N=100** (for a journal submission's
+> comparison table, not this doc's own bench): the "Portenta H7 detail"
+> table's M7 Nano fastlog row further down (29.90ms / 19.81ms / 49.71ms)
+> is the original 10-sample figure. N=100 re-run: mel 26.84ms + infer
+> 17.80ms = 44.64ms — ~10.2% lower, same direction/magnitude as Micro's
+> own N=10-vs-N=100 shift (both real-mic-gated, session-to-session
+> variance expected). See `DRONGONET_SPARSE_MEL_BENCHMARK.md`'s own
+> pointer note for the full figures.
 
 Third chip DrongoNet has been benchmarked on, alongside the Portenta H7
 (`DRONGONET_SPARSE_MEL_BENCHMARK.md`) and M5Stack Core2
