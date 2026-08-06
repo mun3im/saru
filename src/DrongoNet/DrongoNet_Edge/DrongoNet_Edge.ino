@@ -42,7 +42,7 @@
 
 // ── Model header ─────────────────────────────────────────────────────────────
 // DrongoNet-edge: input tensor [1, 184, 80, 1] — (batch, time, mel, ch)
-#include "drongonet-edge.h"
+#include "seabadnet-edge.h"
 
 // =========================================================
 // Model dimensions — DrongoNet-edge
