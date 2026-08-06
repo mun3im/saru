@@ -79,14 +79,22 @@ independently-stated "~3.85ms of compute per 1s of audio" figure exactly
 assumption holds — Goertzel has no cross-block state, so per-block cost
 should scale exactly linearly regardless of chunking, and it does.
 
-**What's different about the conditions, not just the units:**
-concurrent MP3+SD load on Core 1 was measured to cost DrongoNet Micro a
-real but modest ~5-7% mel/inference slowdown vs. its own idle-chip
-baseline (`M5STACK_DUALCORE_BENCHMARK.md`'s "Concurrent-load cost"
-table) — Goertzel wasn't independently re-measured idle on this chip to
-confirm whether it pays a comparable tax, so the 11,550us figure likely
-includes some amount of concurrent-load contention the other three
-platforms' idle-chip figures don't.
+**What's different about the conditions, not just the units:** MP3+SD
+runs on Core 1, a **physically separate core** from Goertzel's Core 0 —
+not the same core under FreeRTOS scheduling contention, so this isn't
+CPU cycles being stolen from Goertzel the way, say, a higher-priority
+same-core task would (see `argus_freertos_priority_starvation` memory
+for what that failure mode actually looks like — this isn't it). Still,
+concurrent operation was measured to cost DrongoNet Micro a real but
+modest ~5-7% mel/inference slowdown vs. its own idle-chip baseline
+(`M5STACK_DUALCORE_BENCHMARK.md`'s "Concurrent-load cost" table), which
+that doc itself attributes to shared-bus-level effects (FreeRTOS
+inter-core signalling, cache line effects) rather than PSRAM contention
+specifically — a real cross-core cost, just not a CPU-scheduling one.
+Goertzel wasn't independently re-measured idle on this chip to confirm
+whether it pays a comparable tax, so the 11,550us figure likely includes
+some amount of that same cross-core effect that the other three
+platforms' genuinely-idle-chip figures don't.
 
 **Portenta M4/M7 ratio is only ~1.07x** (M7 slightly faster) — much
 narrower than the ~1.5-1.9x M4/M7 gap DrongoNet shows for mel+inference
@@ -164,10 +172,11 @@ which applies equally here).
 
 M5Stack's normalized figure is the highest of the four by a wide margin
 — but per the methodology section above, its 11,550us input already
-mixes in concurrent MP3+SD contention the other three platforms' idle-
-chip figures don't pay, so this row isn't a clean "ESP32 core is this
-much less efficient than Cortex-M4F" reading on its own. Treat it as a
-weaker data point than the other three in this table specifically.
+mixes in whatever cross-core (not same-core CPU-contention) cost the
+other three platforms' genuinely-idle-chip figures don't pay, so this
+row isn't a clean "ESP32 core is this much less efficient than
+Cortex-M4F" reading on its own. Treat it as a weaker data point than the
+other three in this table specifically.
 
 **Unlike DrongoNet's normalized table** (where M4 and M7 end up close
 together, both well ahead of Wio Terminal), **Goertzel's normalized M4
